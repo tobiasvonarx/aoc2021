@@ -10,7 +10,7 @@ if len(sys.argv) > 1:
 with open(FILENAME, 'r') as input_file:
     inp = input_file.read().strip().split('\n')
 
-f = {'ab': '1', 'abef': '4', 'abd': '7', 'abcdefg': '8', 'abcdeg': '0', 'acdfg': '2', 'abcdf': '3', 'bcdef': '5', 'bcdefg': '6', 'abcdef': '9'}
+f = {'cf': '1', 'bcdf': '4', 'acf': '7', 'abcdefg': '8', 'abcefg': '0', 'acdeg': '2', 'acdfg': '3', 'abdfg': '5', 'abdefg': '6', 'abcdfg': '9'}
 
 def order(s):
     return ''.join(sorted(s))
