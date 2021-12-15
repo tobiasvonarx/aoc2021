@@ -1,4 +1,9 @@
 defmodule AdventOfCode.Day15 do
+
+  @p1dim 9
+  @p2dim 499
+  
+
   def parse(inp) do
     inp
     |> Enum.with_index()
@@ -10,18 +15,20 @@ defmodule AdventOfCode.Day15 do
         |> Enum.flat_map(
           fn {cell, j} ->
             #{[j, i], cell-?0}
-            if i == 0 do
-              if j == 0 do
-                []
-              else
-                [[[j-1, i], [j, i], cell-?0]]
-              end
-            else
-              if j == 0 do
-                [[[j, i-1], [j, i], cell-?0]]
-              else
-                [[[j-1, i], [j, i], cell-?0], [[j, i-1], [j, i], cell-?0]]
-              end
+            cond do
+              i==0 && j==0 -> [[[j+1, i], [j, i], cell-?0], [[j, i+1], [j, i], cell-?0]]
+              
+              i==0 && j==@p2dim ->  [[[j-1, i], [j, i], cell-?0], [[j, i+1], [j, i], cell-?0]]
+              i==0 -> [[[j-1, i], [j, i], cell-?0], [[j+1, i], [j, i], cell-?0], [[j, i+1], [j, i], cell-?0]]
+
+              j==0 && i==@p2dim -> [[[j-1, i], [j, i], cell-?0], [[j, i-1], [j, i], cell-?0], [[j+1, i], [j, i], cell-?0], [[j, i+1], [j, i], cell-?0]]
+              j==0 -> [[[j, i-1], [j, i], cell-?0], [[j+1, i], [j, i], cell-?0], [[j, i+1], [j, i], cell-?0]]
+
+              i==@p2dim && j==@p2dim ->[[[j-1, i], [j, i], cell-?0], [[j, i-1], [j, i], cell-?0]]
+              i==@p2dim -> [[[j-1, i], [j, i], cell-?0], [[j, i-1], [j, i], cell-?0], [[j+1, i], [j, i], cell-?0]]
+              j==@p2dim -> [[[j-1, i], [j, i], cell-?0], [[j, i-1], [j, i], cell-?0], [[j, i+1], [j, i], cell-?0]]
+            
+              true -> [[[j-1, i], [j, i], cell-?0], [[j, i-1], [j, i], cell-?0], [[j+1, i], [j, i], cell-?0], [[j, i+1], [j, i], cell-?0]]
             end
           end
         )
@@ -40,7 +47,7 @@ defmodule AdventOfCode.Day15 do
         |> Enum.with_index()
         |> Enum.reduce(0,
           fn {cell, j}, sum ->
-            if Enum.member?(risk_vertices, [j, i]) && (i != 0 or j != 0) do
+            if Enum.member?(risk_vertices, [j, i]) do
               sum + cell-?0
             else
               sum
@@ -60,7 +67,7 @@ defmodule AdventOfCode.Day15 do
     |> String.trim()
     |> String.split("\n")
     
-    args
+    res = args
     |> parse()
     |> Enum.reduce(g,
       fn [from, to, cost], graph ->
@@ -69,10 +76,10 @@ defmodule AdventOfCode.Day15 do
       end
     )
     #|> Graph.info()
-    |> Graph.dijkstra([0,0], [99,99])
+    |> Graph.dijkstra([0,0], [(@p1dim+1)*(@p1dim+1)-1,(@p1dim+1)*(@p1dim+1)-1])
     |> get_risk(args)
 
-
+    res - (args |> Enum.at(0) |> String.at(0) |> String.to_integer())
   end
 
   def preprocess(orig) do
@@ -107,15 +114,18 @@ defmodule AdventOfCode.Day15 do
     args = args
     |> preprocess()
 
-    args
+    res = args
     |> parse()
     |> Enum.reduce(g,
       fn [from, to, cost], graph ->
-        e = Graph.Edge.new(from, to, weight: cost)
-        Graph.add_edge(graph, e)
+          e = Graph.Edge.new(from, to, weight: cost)
+          Graph.add_edge(graph, e)
       end
     )
-    |> Graph.dijkstra([0,0], [499, 499])
+    |> Graph.dijkstra([0,0], [@p2dim, @p2dim])
+    |> IO.inspect()
     |> get_risk(args)
+    
+    res - (args |> Enum.at(0) |> String.at(0) |> String.to_integer())
   end
 end
