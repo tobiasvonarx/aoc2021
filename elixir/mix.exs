@@ -22,7 +22,6 @@ defmodule AdventOfCode.MixProject do
   defp deps do
     [
       {:benchee, "~> 1.0"},
-      {:matrix, "~> 0.3.0"},
       {:libgraph, "~> 0.13"},
     ]
   end
